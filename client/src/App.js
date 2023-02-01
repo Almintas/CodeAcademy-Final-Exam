@@ -1,23 +1,38 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { Route, Routes } from 'react-router';
 import './App.css';
+import { PageLayout } from './Components/PageLayout';
+import { RouteSuspense } from './Components/RouteSuspense/RouteSuspence';
+
+const Form = React.lazy(() => import('./Pages/Form/Form'));
+const Login = React.lazy(() => import('./Pages/Login/Login'));
+const Register = React.lazy(() => import('./Pages/Register/Register'));
 
 function App() {
+  const [user, setUser] = useState(null);
+  const handleLogin = (email) => setUser({ email });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Routes>
+        <Route path='/' element={<PageLayout user={user}/>}>
+          <Route index element={
+            <RouteSuspense>
+              <Form />
+            </RouteSuspense>
+          } />
+        </Route>
+        <Route path='/login' element={
+          <RouteSuspense>
+            <Login onLogin={handleLogin}/>
+          </RouteSuspense>
+        } />
+        <Route path='register' element={
+          <RouteSuspense>
+            <Register />
+          </RouteSuspense>
+        } />
+      </Routes>
     </div>
   );
 }
