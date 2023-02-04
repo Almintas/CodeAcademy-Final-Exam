@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 
 export const Register = () => {
@@ -6,25 +7,26 @@ export const Register = () => {
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleRegister = (e) => {
         e.preventDefault();
-        fetch('http://localhost:8080/register', {
+        fetch(`${process.env.REACT_APP_API_URL}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
             },
             body: JSON.stringify({
-                name,
-                surname,
                 email,
-                password
+                password,
+                name,
+                surname
             })
 
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data)
+            navigate('/login');
         })
     }
 
@@ -48,3 +50,5 @@ export const Register = () => {
         </>
     )
 }
+
+export default Register;

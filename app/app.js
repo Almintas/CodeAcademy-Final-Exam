@@ -36,9 +36,22 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-app.get('/admins', (req, res) => {
-    connection.execute('SELECT * FROM admins', (err, result) => {
+app.get('/parcitipants', verifyToken, (req, res) => {
+    const user = usersToken(req);
+
+    connection.execute('SELECT * FROM parcitipants WHERE userId=?', [user.id] ,(err, result) => {
         res.send(result);
+    });
+});
+
+app.post('/parcitipants', verifyToken, (req, res) => {
+    const { name, surname, email, phoneNumber } = req.body;
+    const { id } = usersToken(req);
+
+    connection.execute('INSERT INTO parcitipants (name, surname, email, phoneNumber) VALUES (?, ?, ?, ?)', [name, surname, email, phoneNumber], (err, result) => {
+        connection.execute('SELECT * FROM parcitiprants WHERE userId=?', [id], (err, result) => {
+            res.send(result);
+        })
     })
 });
 
@@ -47,9 +60,12 @@ app.post('/register', (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, 12);
 
     connection.execute('INSERT INTO admins (email, password, name, surname) VALUES (?, ?, ?, ?)', [email, hashedPassword, name, surname], (err, result) =>{
+        if (err?.code === 'ER_DUP_ENTRY') {
+            res.sendStatus(400);
+        }
+
         res.send(result);
-        console.log(result)
-    })
+    });
 });
 
 app.post('/login', (req, res) => {
@@ -74,6 +90,16 @@ app.post('/login', (req, res) => {
             }
         }
     );
+});
+
+app.get('/token/verify', (req, res) => {
+    try{
+        const token = req.headers.authorization.split(' ')[1];
+        const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        res.send(user);
+    } catch(e) {
+        res.send({ error: 'Invalid Token' });
+    }
 });
 
 

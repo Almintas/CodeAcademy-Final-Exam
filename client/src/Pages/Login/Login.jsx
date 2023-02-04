@@ -1,13 +1,19 @@
-import { useState } from "react"
+import { useContext } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { UserContext } from "../../Components/UserContext/UserContext";
+import { LOCAL_STORAGE_JWT_TOKEN_KEY } from "../../Constants/Constants";
 
 
 export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
 
     const handleLogin = (e) => {
         e.preventDefault();
-        fetch('http://localhost:8080/login', {
+        fetch(`${process.env.REACT_APP_API_URL}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -16,6 +22,10 @@ export const Login = () => {
         })
         .then(res => res.json())
         .then(data => {
+            const { id, email, token } = data;
+            localStorage.setItem(LOCAL_STORAGE_JWT_TOKEN_KEY, token);
+            setUser({ id, email });
+            navigate('/');
             console.log(data);
         })
     }
@@ -23,7 +33,7 @@ export const Login = () => {
     return (
         <>
         <form onSubmit={handleLogin}>
-            <input placeholder="Email" required 
+            <input placeholder="Email" required type='email'
             onChange={(e) => setEmail(e.target.value)} 
             value = {email}
             />
@@ -36,3 +46,5 @@ export const Login = () => {
         </>
     )
 }
+
+export default Login;
