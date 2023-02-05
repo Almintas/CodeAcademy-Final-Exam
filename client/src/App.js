@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div className='App'>
       <Routes>
         <Route path='/' element={<PageLayout />}>
           <Route index element={

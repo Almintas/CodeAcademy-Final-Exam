@@ -1,6 +1,31 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
+const StyledInput = styled.input`
+display: flex;
+width: 200px;
+padding-top: 5px;
+margin-top: 10px;
+border-radius: 8px;
+`;
+
+const StyledButton = styled.button`
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100px;
+height: 30px;
+margin-top: 10px;
+`;
+
+const StyledForm = styled.form`
+display: flex;
+flex-direction: column;
+align-items: center;
+margin: 0 auto;
+margin-top: 300px;
+`;
 
 export const Register = () => {
     const [name, setName] = useState('');
@@ -32,21 +57,21 @@ export const Register = () => {
 
     return (
         <>
-        <form onSubmit={handleRegister}>
-            <input placeholder="Name" required onChange={(e) => setName(e.target.value)} 
+        <StyledForm onSubmit={handleRegister}>
+            <StyledInput placeholder="Name" required onChange={(e) => setName(e.target.value)} 
             value = {name}
             />
-            <input placeholder="Surname" required onChange={(e) => setSurname(e.target.value)} 
+            <StyledInput placeholder="Surname" required onChange={(e) => setSurname(e.target.value)} 
             value = {surname}
             />
-            <input placeholder="Email" required onChange={(e) => setEmail(e.target.value)} 
+            <StyledInput placeholder="Email" required onChange={(e) => setEmail(e.target.value)} 
             value = {email}
             />
-            <input placeholder="Password" required onChange={(e) => setPassword(e.target.value)} 
+            <StyledInput placeholder="Password" required onChange={(e) => setPassword(e.target.value)} 
             value = {password}
             />
-            <button>Registruotis</button>
-        </form>
+            <StyledButton>Registruotis</StyledButton>
+        </StyledForm>
         </>
     )
 }

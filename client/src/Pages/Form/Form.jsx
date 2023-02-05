@@ -3,7 +3,32 @@ import { useContext } from "react";
 import { useEffect } from "react";
 import { UserContext } from "../../Components/UserContext/UserContext";
 import { LOCAL_STORAGE_JWT_TOKEN_KEY } from "../../Constants/Constants";
+import styled from "styled-components";
 
+const StyledForm = styled.form`
+display: flex;
+flex-direction: column;
+align-items: center;
+margin: 0 auto;
+margin-top: 300px;
+`;
+
+const StyledInput = styled.input`
+display: flex;
+width: 200px;
+padding-top: 5px;
+margin-top: 10px;
+border-radius: 8px;
+`;
+
+const StyledButton = styled.button`
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100px;
+height: 30px;
+margin-top: 10px;
+`;
 
 export const Form = () => {
     const [parcitipants, setParcitipants] = useState([]);
@@ -25,7 +50,7 @@ export const Form = () => {
         });
     }, [user.id]);
 
-    const handleParcitipants = (e) => {
+    const handleAddParcitipants = (e) => {
         e.preventDefault();
         fetch(`${process.env.REACT_APP_API_URL}/parcitipants`, {
             method: 'POST',
@@ -37,7 +62,8 @@ export const Form = () => {
                 name,
                 surname,
                 email,
-                phoneNumber
+                phoneNumber,
+                userId: user.id
             })
         })
         .then(res => res.json())
@@ -48,27 +74,49 @@ export const Form = () => {
         })
     }
 
+    const handleDeleteParcitipants = (id) => {
+        if (window.confirm('Are you sure?')) {
+            fetch(`${process.env.REACT_APP_API_URL}/parcitipants/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    authorization: 'Bearer ' + localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY)
+                }
+            })
+            .then(res => {
+                try {
+                    return res.json();
+                  } catch (error) {
+                    console.error(error);
+                  }
+            })
+            .then(data => {
+                setParcitipants(data);
+                console.log(data);
+            })
+        }
+    };
+
     return (
         <>
-        <form onSubmit={handleParcitipants}>
-            <input placeholder="Name" required 
+        <StyledForm onSubmit={handleAddParcitipants}>
+            <StyledInput placeholder="Name" required 
             onChange={(e) => setName(e.target.value)}
             value = {name}
             />
-            <input placeholder="Surname" required 
+            <StyledInput placeholder="Surname" required 
             onChange={(e) => setSurname(e.target.value)}
             value = {surname}
             />
-            <input placeholder="Email" required type='email'
+            <StyledInput placeholder="Email" required type='email'
             onChange={(e) => setEmail(e.target.value)}
             value = {email}
             />
-            <input placeholder="Phone Number" required type='number'
+            <StyledInput placeholder="Phone Number" required type='number'
             onChange={(e) => setPhoneNumber(e.target.value)}
             value ={phoneNumber}
             />
-            <button>Prideti</button>
-        </form>
+            <StyledButton>Prideti</StyledButton>
+        </StyledForm>
 
         {parcitipants.map((exp) => (
             <div key={exp.id}>
@@ -76,6 +124,7 @@ export const Form = () => {
                 <h3>{exp.surname}</h3>
                 <h4>{exp.email}</h4>
                 <h4>{exp.phoneNumber}</h4>
+                <button onClick={() => handleDeleteParcitipants(exp.id)}>DELETE</button>
             </div>
         ))}
         </>

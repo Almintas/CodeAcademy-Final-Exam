@@ -45,11 +45,23 @@ app.get('/parcitipants', verifyToken, (req, res) => {
 });
 
 app.post('/parcitipants', verifyToken, (req, res) => {
-    const { name, surname, email, phoneNumber } = req.body;
+    const {name, surname, email, phoneNumber} = req.body;
     const { id } = usersToken(req);
+    const sqlQuery = 'INSERT INTO parcitipants (name, surname, email, phoneNumber, userId) VALUES (?, ?, ?, ?, ?)';
 
-    connection.execute('INSERT INTO parcitipants (name, surname, email, phoneNumber) VALUES (?, ?, ?, ?)', [name, surname, email, phoneNumber], (err, result) => {
-        connection.execute('SELECT * FROM parcitiprants WHERE userId=?', [id], (err, result) => {
+    connection.execute(sqlQuery, [name, surname, email, phoneNumber, id], () => {
+        connection.execute('SELECT * FROM parcitipants WHERE userId=?', [id], (err, result) => {
+            res.send(result);
+        })
+    })
+});
+
+app.delete('/parcitipants/:id', verifyToken, (req, res) => {
+    const { id } = req.params;
+    const { id: userId } = usersToken(req);
+
+    connection.execute('DELETE FROM parcitipants WHERE userId=? AND id=?', [userId, id], () => {
+        connection.execute('SELECT * FROM parcitipants WHERE userId=?', [userId], (err, result) => {
             res.send(result);
         })
     })
@@ -82,7 +94,7 @@ app.post('/login', (req, res) => {
                 const isPasswordCorrect = bcrypt.compareSync(password, passwordHash);
                 if (isPasswordCorrect) {
                     const { id, email } = result[0];
-                    const token = jwt.sign({ id, email }, process.env.JWT_SECRET_KEY);
+                    const token = jwt.sign({ id, email }, process.env.JWT_SECRET_KEY, {expiresIn: '1h'});
                     res.send({ token, id, email });
                 } else {
                     res.sendStatus(401);
@@ -93,7 +105,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/token/verify', (req, res) => {
-    try{
+    try {
         const token = req.headers.authorization.split(' ')[1];
         const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
         res.send(user);
