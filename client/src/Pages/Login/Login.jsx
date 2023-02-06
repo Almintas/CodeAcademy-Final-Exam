@@ -4,24 +4,11 @@ import { useNavigate } from "react-router";
 import { UserContext } from "../../Components/UserContext/UserContext";
 import { LOCAL_STORAGE_JWT_TOKEN_KEY } from "../../Constants/Constants";
 import styled from "styled-components";
-import callcenter from '../../Components/image/callcenter.jpg';
-import vectorgrid from '../../Components/image/vectorgrid.jpg';
-
-const StyledImg = styled.img`
-position: absolute;
-width: 500px;
-padding-top: 300px;
-object-position: center;
-margin-left: -250px;
-margin-top: -250px;
-
-`;
-
-const StyledGridImg = styled.img`
-position: absolute;
-width: 760px;
-margin-left: -400px;
-`;
+import { BackGround } from "../../Components/BackGround/BackGround";
+import { CallCenterComponent } from "../../Components/CallCenterImageComponent/CallCenterComponent";
+import { Navigation } from "../../Components/Navigation/Navigation";
+import { ButtonWrapper } from "../../Components/Button/Button";
+import { InputWrapper } from "../../Components/Input/Input";
 
 const StyledForm = styled.form`
 display: flex;
@@ -29,32 +16,6 @@ flex-direction: column;
 align-items: center;
 margin: 0 auto;
 padding-top: 300px;
-`;
-
-const StyledInput = styled.input`
-position: relative;
-display: flex;
-width: 200px;
-padding-top: 5px;
-margin-top: 20px;
-border-radius: 8px;
-`;
-
-const StyledButton = styled.button`
-position: relative;
-display: flex;
-justify-content: center;
-align-items: center;
-width: 100px;
-height: 30px;
-margin-top: 25px;
-border-radius: 5px;
-box-shadow: 0.1em 0.1em 0.5em #124;
-background-image: linear-gradient(lightgray, white);
-:active {
-    box-shadow: inset 0 0 0.5em #124,
-    inset 0 0.5em 1em rgba(0,0,0,0.4);
-}
 `;
 
 export const Login = () => {
@@ -84,18 +45,19 @@ export const Login = () => {
 
     return (
         <>
-            <StyledGridImg src={vectorgrid} alt='vector' />
-            <StyledImg src={callcenter} alt='foto' />
+        <BackGround />
+        <CallCenterComponent />
+        <Navigation />
             <StyledForm onSubmit={handleLogin}>
-                <StyledInput placeholder="Email" required type='email'
+                <InputWrapper placeholder="Email" required type='email'
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                 />
-                <StyledInput placeholder="Password" required
+                <InputWrapper placeholder="Password" required
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
                 />
-                <StyledButton>Log In</StyledButton>
+                <ButtonWrapper>Log In</ButtonWrapper>
             </StyledForm>
         </>
     )

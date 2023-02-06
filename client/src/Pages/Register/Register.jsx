@@ -1,23 +1,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-const StyledInput = styled.input`
-display: flex;
-width: 200px;
-padding-top: 5px;
-margin-top: 10px;
-border-radius: 8px;
-`;
-
-const StyledButton = styled.button`
-display: flex;
-justify-content: center;
-align-items: center;
-width: 100px;
-height: 30px;
-margin-top: 10px;
-`;
+import BackGround from "../../Components/BackGround/BackGround";
+import { ButtonWrapper } from "../../Components/Button/Button";
+import { CallCenterComponent } from "../../Components/CallCenterImageComponent/CallCenterComponent";
+import { InputWrapper } from "../../Components/Input/Input";
+import { Navigation } from "../../Components/Navigation/Navigation";
 
 const StyledForm = styled.form`
 display: flex;
@@ -57,20 +45,23 @@ export const Register = () => {
 
     return (
         <>
+        <BackGround />
+        <CallCenterComponent />
+        <Navigation />
         <StyledForm onSubmit={handleRegister}>
-            <StyledInput placeholder="Name" required onChange={(e) => setName(e.target.value)} 
+            <InputWrapper placeholder="Name" required onChange={(e) => setName(e.target.value)} 
             value = {name}
             />
-            <StyledInput placeholder="Surname" required onChange={(e) => setSurname(e.target.value)} 
+            <InputWrapper placeholder="Surname" required onChange={(e) => setSurname(e.target.value)} 
             value = {surname}
             />
-            <StyledInput placeholder="Email" required onChange={(e) => setEmail(e.target.value)} 
+            <InputWrapper placeholder="Email" required onChange={(e) => setEmail(e.target.value)} 
             value = {email}
             />
-            <StyledInput placeholder="Password" required onChange={(e) => setPassword(e.target.value)} 
+            <InputWrapper placeholder="Password" required onChange={(e) => setPassword(e.target.value)} 
             value = {password}
             />
-            <StyledButton>Registruotis</StyledButton>
+            <ButtonWrapper>Register</ButtonWrapper>
         </StyledForm>
         </>
     )
