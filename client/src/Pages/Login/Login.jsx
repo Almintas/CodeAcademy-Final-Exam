@@ -15,7 +15,7 @@ display: flex;
 flex-direction: column;
 align-items: center;
 margin: 0 auto;
-padding-top: 300px;
+padding-top: 180px;
 `;
 
 export const Login = () => {

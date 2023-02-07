@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
+import { Footer } from './Components/Footer/Footer';
 import { PageLayout } from './Components/PageLayout';
 import { RouteSuspense } from './Components/RouteSuspense/RouteSuspence';
 import { UserContext } from './Components/UserContext/UserContext';
@@ -57,6 +58,7 @@ function App() {
           </RouteSuspense>
         } />
       </Routes>
+      <Footer />
     </div>
   );
 }

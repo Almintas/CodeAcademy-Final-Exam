@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useContext } from "react";
-import { useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../Components/UserContext/UserContext";
 import { LOCAL_STORAGE_JWT_TOKEN_KEY } from "../../Constants/Constants";
 import styled from "styled-components";
@@ -16,11 +14,23 @@ margin: 0 auto;
 `;
 
 const StyledDiv = styled.div`
-padding-left: 500px;
+padding-left: 450px;
 margin-top: -200px;
 `;
 
-const StyledTable = styled.table`
+const StyledTD = styled.td`
+padding-right: 60px;
+padding-top: 10px;
+`;
+
+const StyledTH = styled.th`
+padding-right: 60px;
+`;
+
+const StyledDeleteButton = styled.button`
+font-size: 1em;
+width: 100px;
+font-family: garamond;
 `;
 
 export const Form = () => {
@@ -75,16 +85,9 @@ export const Form = () => {
                     authorization: 'Bearer ' + localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY)
                 }
             })
-            .then(res => {
-                try {
-                    return res.json();
-                  } catch (error) {
-                    console.error(error);
-                  }
-            })
+            .then(res => res.json())
             .then(data => {
                 setParcitipants(data);
-                console.log(data);
             })
         }
     };
@@ -114,27 +117,29 @@ export const Form = () => {
         </StyledForm>
 
         <StyledDiv>
-            <StyledTable>
+            <table>
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
+                    <StyledTH>Line</StyledTH>
+                    <StyledTH>Name</StyledTH>
+                    <StyledTH>Surname</StyledTH>
+                    <StyledTH>Email</StyledTH>
+                    <StyledTH>Phone Number</StyledTH>
                 </tr>
                 </thead>
                 <tbody>
-                    {parcitipants.map(item => (
+                    {parcitipants.map((item, index) => (
                         <tr key={item.id}>
-                            <td>{item.name}</td>
-                            <td>{item.surname}</td>
-                            <td>{item.email}</td>
-                            <td>{item.phoneNumber}</td>
-                            <td>{<button onClick={() => handleDeleteParcitipants(item.id)}>DELETE</button>}</td>
+                            <StyledTD>{index + 1}</StyledTD>
+                            <StyledTD>{item.name}</StyledTD>
+                            <StyledTD>{item.surname}</StyledTD>
+                            <StyledTD>{item.email}</StyledTD>
+                            <StyledTD>{item.phoneNumber}</StyledTD>
+                            <StyledTD>{<StyledDeleteButton onClick={() => handleDeleteParcitipants(item.id)}>delete</StyledDeleteButton>}</StyledTD>
                         </tr>
                     ))}
                 </tbody>
-            </StyledTable>
+            </table>
         </StyledDiv>
         </>
     )

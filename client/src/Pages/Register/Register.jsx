@@ -12,7 +12,7 @@ display: flex;
 flex-direction: column;
 align-items: center;
 margin: 0 auto;
-margin-top: 300px;
+margin-top: 180px;
 `;
 
 export const Register = () => {
