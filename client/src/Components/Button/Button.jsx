@@ -19,6 +19,5 @@ background-image: linear-gradient(lightgray, white);
 
 export const ButtonWrapper = ({ children }) => {
     return <ButtonStyled>{children}</ButtonStyled>
-}
-
+};
 export default ButtonWrapper;

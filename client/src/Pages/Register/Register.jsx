@@ -20,6 +20,7 @@ export const Register = () => {
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleRegister = (e) => {
@@ -37,9 +38,23 @@ export const Register = () => {
             })
 
         })
-        .then(res => res.json())
+        .then(res => {
+            if (res.status === 400) {
+                throw new Error('User already exists');
+            }
+
+            if (!res.ok) {
+                throw new Error('Something went wrong');
+            }
+
+            return res.json();
+        })
         .then(data => {
             navigate('/login');
+            setError('');
+        })
+        .catch((e) => {
+            setError(e.message);
         })
     }
 
@@ -49,22 +64,36 @@ export const Register = () => {
         <CallCenterComponent />
         <Navigation />
         <StyledForm onSubmit={handleRegister}>
-            <InputWrapper placeholder="Name" required onChange={(e) => setName(e.target.value)} 
+            <h1>Register</h1>
+            <InputWrapper 
+            placeholder="Name" 
+            required 
+            onChange={(e) => setName(e.target.value)} 
             value = {name}
             />
-            <InputWrapper placeholder="Surname" required onChange={(e) => setSurname(e.target.value)} 
+            <InputWrapper 
+            placeholder="Surname" 
+            required 
+            onChange={(e) => setSurname(e.target.value)} 
             value = {surname}
             />
-            <InputWrapper placeholder="Email" required onChange={(e) => setEmail(e.target.value)} 
+            <InputWrapper 
+            placeholder="Email" 
+            required 
+            onChange={(e) => setEmail(e.target.value)} 
             value = {email}
             />
-            <InputWrapper placeholder="Password" required onChange={(e) => setPassword(e.target.value)} 
+            <InputWrapper 
+            placeholder="Password" 
+            required 
+            type='password' 
+            onChange={(e) => setPassword(e.target.value)} 
             value = {password}
             />
+            {error && <div>{error}</div>}
             <ButtonWrapper>Register</ButtonWrapper>
         </StyledForm>
         </>
     )
-}
-
+};
 export default Register;

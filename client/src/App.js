@@ -2,10 +2,11 @@ import React, { useContext, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import { Footer } from './Components/Footer/Footer';
-import { PageLayout } from './Components/PageLayout';
+import { PageLayout } from './Components/PageLayout/PageLayout';
 import { RouteSuspense } from './Components/RouteSuspense/RouteSuspence';
 import { UserContext } from './Components/UserContext/UserContext';
 import { LOCAL_STORAGE_JWT_TOKEN_KEY } from './Constants/Constants';
+import { PageNotFound } from './Pages/PageNotFound/PageNotFound';
 
 const Form = React.lazy(() => import('./Pages/Form/Form'));
 const Login = React.lazy(() => import('./Pages/Login/Login'));
@@ -57,10 +58,14 @@ function App() {
             <Register />
           </RouteSuspense>
         } />
+        <Route path='*' element={
+          <RouteSuspense>
+            <PageNotFound />
+          </RouteSuspense>
+        } />
       </Routes>
       <Footer />
     </div>
   );
 }
-
 export default App;

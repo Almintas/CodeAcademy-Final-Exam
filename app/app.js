@@ -39,7 +39,8 @@ const verifyToken = (req, res, next) => {
 app.get('/parcitipants', verifyToken, (req, res) => {
     const user = usersToken(req);
 
-    connection.execute('SELECT * FROM parcitipants WHERE userId=?', [user.id] ,(err, result) => {
+    connection.execute('SELECT * FROM parcitipants WHERE userId=?', 
+    [user.id], (err, result) => {
         res.send(result);
     });
 });
@@ -47,11 +48,17 @@ app.get('/parcitipants', verifyToken, (req, res) => {
 app.post('/parcitipants', verifyToken, (req, res) => {
     const {name, surname, email, phoneNumber} = req.body;
     const { id } = usersToken(req);
-    const sqlQuery = 'INSERT INTO parcitipants (name, surname, email, phoneNumber, userId) VALUES (?, ?, ?, ?, ?)';
+    const sqlQuery = 
+    'INSERT INTO parcitipants (name, surname, email, phoneNumber, userId) VALUES (?, ?, ?, ?, ?)';
 
     connection.execute(sqlQuery, [name, surname, email, phoneNumber, id], () => {
-        connection.execute('SELECT * FROM parcitipants WHERE userId=?', [id], (err, result) => {
-            res.send(result);
+        connection.execute('SELECT * FROM parcitipants WHERE userId=?', 
+        [id], (err, result) => {
+            if (err?.code === 'ER_DUP_ENTRY') {
+                res.sendStatus(400);
+            }
+
+            res.send(result)
         })
     })
 });
@@ -60,8 +67,10 @@ app.delete('/parcitipants/:id', verifyToken, (req, res) => {
     const { id } = req.params;
     const { id: userId } = usersToken(req);
 
-    connection.execute('DELETE FROM parcitipants WHERE userId=? AND id=?', [userId, id], () => {
-        connection.execute('SELECT * FROM parcitipants WHERE userId=?', [userId], (err, result) => {
+    connection.execute('DELETE FROM parcitipants WHERE userId=? AND id=?',
+     [userId, id], () => {
+        connection.execute('SELECT * FROM parcitipants WHERE userId=?', 
+        [userId], (err, result) => {
             res.send(result);
         })
     })
@@ -71,7 +80,8 @@ app.post('/register', (req, res) => {
     const { email, password, name, surname } = req.body;
     const hashedPassword = bcrypt.hashSync(password, 12);
 
-    connection.execute('INSERT INTO admins (email, password, name, surname) VALUES (?, ?, ?, ?)', [email, hashedPassword, name, surname], (err, result) =>{
+    connection.execute('INSERT INTO admins (email, password, name, surname) VALUES (?, ?, ?, ?)', 
+    [email, hashedPassword, name, surname], (err, result) => {
         if (err?.code === 'ER_DUP_ENTRY') {
             res.sendStatus(400);
         }

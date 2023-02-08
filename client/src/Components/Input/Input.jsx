@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "styled-components";
 
 const StyledInput = styled.input`
 position: relative;
@@ -12,4 +12,4 @@ box-shadow: 3px 3px 3px;
 
 export const InputWrapper = ({ ...props }) => {
     return <StyledInput {...props}/>
-}
+};

@@ -39,6 +39,7 @@ export const Form = () => {
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [error, setError] = useState('');
     const { user } = useContext(UserContext);
 
     useEffect(() => {
@@ -47,10 +48,12 @@ export const Form = () => {
                 authorization: 'Bearer ' + localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY)
             }
         })
-        .then(res => res.json())
-        .then(data => {
-            setParcitipants(data);
-        });
+            .then(res => res.json())
+            .then(data => {
+                if (!data.error) {
+                    setParcitipants(data);
+                }
+            });
     }, [user.id]);
 
     const handleAddParcitipants = (e) => {
@@ -58,7 +61,7 @@ export const Form = () => {
         fetch(`${process.env.REACT_APP_API_URL}/parcitipants`, {
             method: 'POST',
             headers: {
-                'Content-Type' : 'application/json',
+                'Content-Type': 'application/json',
                 authorization: 'Bearer ' + localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY)
             },
             body: JSON.stringify({
@@ -69,13 +72,32 @@ export const Form = () => {
                 userId: user.id
             })
         })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.error) {
-                setParcitipants(data);
-            }
-        })
-    }
+            .then(res => {
+                if (res.status === 204) {
+                    throw new Error('User already exists');
+                }
+    
+                if (!res.ok) {
+                    throw new Error('Something went wrong');
+                }
+    
+                return res.json();
+            })
+            .then(data => {
+                if (!data.error) {
+                    setParcitipants(data);
+                    setName('');
+                    setSurname('');
+                    setEmail('');
+                    setPhoneNumber('');
+                    setError('');
+                }
+                
+            })
+            .catch((e) => {
+                setError(e.message);
+            })
+    };
 
     const handleDeleteParcitipants = (id) => {
         if (window.confirm('Are you sure?')) {
@@ -85,64 +107,88 @@ export const Form = () => {
                     authorization: 'Bearer ' + localStorage.getItem(LOCAL_STORAGE_JWT_TOKEN_KEY)
                 }
             })
-            .then(res => res.json())
-            .then(data => {
-                setParcitipants(data);
-            })
+                .then(res => res.json())
+                .then(data => {
+                    setParcitipants(data);
+                });
         }
     };
 
+    const alphabeticalParcitipants = [...parcitipants].sort((a, b) => {
+        if (a.name < b.name) {
+            return -1;
+        }
+        if (a.name > b.name) {
+            return 1;
+        }
+        return 0;
+    });
+
     return (
         <>
-        <BackGround />
-        <Navigation />
-        <StyledForm onSubmit={handleAddParcitipants}>
-            <InputWrapper placeholder="Name" required 
-            onChange={(e) => setName(e.target.value)}
-            value = {name}
-            />
-            <InputWrapper placeholder="Surname" required 
-            onChange={(e) => setSurname(e.target.value)}
-            value = {surname}
-            />
-            <InputWrapper placeholder="Email" required type='email'
-            onChange={(e) => setEmail(e.target.value)}
-            value = {email}
-            />
-            <InputWrapper placeholder="Phone Number" required type='number'
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            value ={phoneNumber}
-            />
-            <ButtonWrapper>Add</ButtonWrapper>
-        </StyledForm>
-
-        <StyledDiv>
-            <table>
-                <thead>
-                <tr>
-                    <StyledTH>Line</StyledTH>
-                    <StyledTH>Name</StyledTH>
-                    <StyledTH>Surname</StyledTH>
-                    <StyledTH>Email</StyledTH>
-                    <StyledTH>Phone Number</StyledTH>
-                </tr>
-                </thead>
-                <tbody>
-                    {parcitipants.map((item, index) => (
-                        <tr key={item.id}>
-                            <StyledTD>{index + 1}</StyledTD>
-                            <StyledTD>{item.name}</StyledTD>
-                            <StyledTD>{item.surname}</StyledTD>
-                            <StyledTD>{item.email}</StyledTD>
-                            <StyledTD>{item.phoneNumber}</StyledTD>
-                            <StyledTD>{<StyledDeleteButton onClick={() => handleDeleteParcitipants(item.id)}>delete</StyledDeleteButton>}</StyledTD>
+            <BackGround />
+            <Navigation />
+            <StyledForm onSubmit={handleAddParcitipants}>
+                <h1>New Parcitipants</h1>
+                <InputWrapper 
+                placeholder="Name" 
+                required
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                />
+                <InputWrapper 
+                placeholder="Surname" 
+                required
+                onChange={(e) => setSurname(e.target.value)}
+                value={surname}
+                />
+                <InputWrapper 
+                placeholder="Email" 
+                required 
+                type='email'
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                />
+                <InputWrapper 
+                placeholder="Phone Number" 
+                required 
+                type='number'
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                value={phoneNumber}
+                />
+                <ButtonWrapper>Add</ButtonWrapper>
+                {error && <div>{error}</div>}
+            </StyledForm>
+            <StyledDiv>
+                <table>
+                    <thead>
+                        <tr>
+                            <StyledTH>Line</StyledTH>
+                            <StyledTH>Name</StyledTH>
+                            <StyledTH>Surname</StyledTH>
+                            <StyledTH>Email</StyledTH>
+                            <StyledTH>Phone Number</StyledTH>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </StyledDiv>
+                    </thead>
+                    <tbody>
+                        {alphabeticalParcitipants.map((item, index) => (
+                            <tr key={item.id}>
+                                <StyledTD>{index + 1}</StyledTD>
+                                <StyledTD>{item.name}</StyledTD>
+                                <StyledTD>{item.surname}</StyledTD>
+                                <StyledTD>{item.email}</StyledTD>
+                                <StyledTD>{item.phoneNumber}</StyledTD>
+                                <StyledTD>{<StyledDeleteButton
+                                    onClick={() => handleDeleteParcitipants(item.id)}>
+                                    delete
+                                </StyledDeleteButton>}
+                                </StyledTD>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </StyledDiv>
         </>
     )
-}
-
+};
 export default Form;

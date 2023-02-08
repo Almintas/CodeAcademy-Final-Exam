@@ -14,4 +14,4 @@ export const UserContextWrapper = ({ children }) => {
             {children}
         </UserContext.Provider>
     );
-}
+};

@@ -42,7 +42,7 @@ color: #000;
 export const Navigation = () => {
 
     const navigate = useNavigate();
-    const { setUser } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
 
     const handleLogout = () => {
         localStorage.removeItem(LOCAL_STORAGE_JWT_TOKEN_KEY);
@@ -55,8 +55,10 @@ export const Navigation = () => {
         <NavigationStyledDiv>
         <NavigationStyled to='/login'>Login</NavigationStyled>
         <NavigationStyled to='/register'>Regsiter</NavigationStyled>
-        <StyledLogOutButton onClick={handleLogout}>Log Out</StyledLogOutButton>
+        {user && (
+            <StyledLogOutButton onClick={handleLogout}>Log Out</StyledLogOutButton>
+        )}
         </NavigationStyledDiv>
         </>
     )
-}
+};

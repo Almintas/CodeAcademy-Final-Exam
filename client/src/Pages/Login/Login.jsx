@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { UserContext } from "../../Components/UserContext/UserContext";
 import { LOCAL_STORAGE_JWT_TOKEN_KEY } from "../../Constants/Constants";
@@ -22,6 +21,7 @@ export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [error, setError] = useState('');
     const { setUser } = useContext(UserContext);
 
     const handleLogin = (e) => {
@@ -33,13 +33,26 @@ export const Login = () => {
             },
             body: JSON.stringify({ email, password })
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    throw new Error('Incorrect username or password');
+                }
+    
+                if (!res.ok) {
+                    throw new Error('Something went wrong');
+                }
+    
+                return res.json();
+            })
             .then(data => {
                 const { id, email, token } = data;
                 localStorage.setItem(LOCAL_STORAGE_JWT_TOKEN_KEY, token);
                 setUser({ id, email });
                 navigate('/');
-                console.log(data);
+                setError('');
+            })
+            .catch((e) => {
+                setError(e.message);
             })
     }
 
@@ -49,18 +62,25 @@ export const Login = () => {
         <CallCenterComponent />
         <Navigation />
             <StyledForm onSubmit={handleLogin}>
-                <InputWrapper placeholder="Email" required type='email'
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
+                <h1>Log In</h1>
+                <InputWrapper 
+                placeholder="Email" 
+                required 
+                type='email'
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
                 />
-                <InputWrapper placeholder="Password" required
-                    onChange={(e) => setPassword(e.target.value)}
-                    value={password}
+                <InputWrapper 
+                placeholder="Password" 
+                required 
+                type='password'
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
                 />
+                {error && <div>{error}</div>}
                 <ButtonWrapper>Log In</ButtonWrapper>
             </StyledForm>
         </>
     )
-}
-
+};
 export default Login;
